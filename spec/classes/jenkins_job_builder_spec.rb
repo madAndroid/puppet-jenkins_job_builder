@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'yaml'
 
 describe 'jenkins_job_builder' do
   context 'supported operating systems' do
@@ -9,7 +10,7 @@ describe 'jenkins_job_builder' do
           :osfamily => osfamily,
         }}
 
-        #it { should compile.with_all_deps }
+        it { should compile.with_all_deps }
 
         it { should contain_class('jenkins_job_builder::params') }
 
@@ -90,20 +91,38 @@ describe 'jenkins_job_builder' do
               'name'        => 'test02',
               'description' => 'the second jenkins job'
             }
+          },
+          'test03' => {
+            'config' => {
+              'name'        => 'test03',
+              'description' => 'the third jenkins job',
+              'builders'    => [
+                'shell'  => "echo 'this is a test'",
+                'shell'  => "echo 'this is a second test'",
+              ]
+            }
           }
         }
       }}
       let(:facts) {{
         :osfamily => 'Debian',
       }}
+      let(:config_yaml) {{
+        :osfamily => 'Debian',
+      }}
 
       it { should contain_file('/tmp/jenkins-test01.yaml').with(
-        'content' => "---\n- job:\n    description: \"the first jenkins job\"\n    name: \"test01\"\n"
+        'content' => [ 'job' => params[:jobs]['test01']['config']].to_yaml
       )}
 
       it { should contain_file('/tmp/jenkins-test02.yaml').with(
-        'content' => "---\n- job:\n    description: \"the second jenkins job\"\n    name: \"test02\"\n"
+        'content' => [ 'job' => params[:jobs]['test02']['config']].to_yaml
       )}
+
+      it { should contain_file('/tmp/jenkins-test03.yaml').with(
+        'content' => [ 'job' => params[:jobs]['test03']['config']].to_yaml
+      )}
+
     end
   end
 end
