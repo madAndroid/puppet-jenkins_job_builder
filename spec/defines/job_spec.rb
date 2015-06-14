@@ -12,7 +12,7 @@ describe 'jenkins_job_builder::job', :type => :define do
 
         it { should contain_exec('manage jenkins job - test').with(
           'command' => '/bin/sleep 0 && /usr/local/bin/jenkins-jobs --ignore-cache --conf /etc/jenkins_jobs/jenkins_jobs.ini update /tmp/jenkins-test.yaml',
-          'refreshonly' => 'true',
+          'creates' => '/var/lib/jenkins/jobs/test.xml',
           'require' => 'Service[jenkins]'
         )}
       end
