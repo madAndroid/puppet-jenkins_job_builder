@@ -9,13 +9,9 @@ describe 'jenkins_job_builder' do
           :osfamily => osfamily,
         }}
 
-        #it { should compile.with_all_deps }
+        it { should compile.with_all_deps }
 
         it { should contain_class('jenkins_job_builder::params') }
-
-        ['python', 'python-pip', 'pyyaml', 'python-argparse'].each do |dep|
-          it { should contain_package(dep).with_ensure('present') }
-        end
 
         it { should contain_class('jenkins_job_builder::install').that_comes_before('jenkins_job_builder::config') }
         it { should contain_class('jenkins_job_builder::config') }
@@ -62,6 +58,45 @@ describe 'jenkins_job_builder' do
         )}
       end
     end
+    describe "jenkins_job_builder class without any parameters on a 'Debian' OS" do
+      let(:params) {{ }}
+      let(:facts) {{
+        :osfamily => 'Debian',
+      }}
+
+      ['python', 'python-pip', 'pyyaml'].each do |dep|
+        it { should contain_package(dep).with_ensure('present') }
+      end
+
+    end
+    describe "jenkins_job_builder class without any parameters on a 'RedHat' OS" do
+      let(:params) {{ }}
+      let(:facts) {{
+        :osfamily => 'RedHat',
+      }}
+
+      ['python', 'python-pip', 'pyyaml', 'python-argparse'].each do |dep|
+        it { should contain_package(dep).with_ensure('present') }
+      end
+
+    end
+  end
+
+  context 'install from git' do
+    describe 'jenkins_job_builder installed from git' do
+      let(:params) {{
+        :install_from_git => true
+      }}
+      let(:facts) {{
+        :osfamily => 'Debian'
+      }}
+
+      it { should contain_vcsrepo('/opt/jenkins_job_builder').with(
+        'ensure'   => 'latest',
+        'provider' => 'git'
+      )}
+
+    end
   end
 
   context 'install from git' do
@@ -85,7 +120,7 @@ describe 'jenkins_job_builder' do
     describe 'jenkins_job_builder class without any parameters on Solaris/Nexenta' do
       let(:facts) {{
         :osfamily        => 'Solaris',
-        :operatingsystem => 'Nexenta',
+        :operatingsystem => 'Nexenta'
       }}
 
       it { expect { should contain_package('jenkins_job_builder') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
