@@ -96,6 +96,12 @@ describe 'jenkins_job_builder' do
         'provider' => 'git'
       )}
 
+      it { should contain_package('jenkins-job-builder').with(
+        'ensure'   => 'installed',
+        'provider' => 'pip',
+        'source'   => '/opt/jenkins_job_builder',
+      )}
+
     end
   end
 

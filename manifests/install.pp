@@ -29,12 +29,11 @@ class jenkins_job_builder::install(
       revision => $git_revision,
       source   => $git_url,
     }
-
-    exec { 'install_jenkins_job_builder':
-      command     => 'pip install /opt/jenkins_job_builder',
-      path        => '/usr/local/bin:/usr/bin:/bin/',
-      refreshonly => true,
-      subscribe   => Vcsrepo['/opt/jenkins_job_builder'],
+    ->
+    package { 'jenkins-job-builder':
+      ensure   => installed,
+      provider => 'pip',
+      source   => '/opt/jenkins_job_builder',
     }
 
   } else {
