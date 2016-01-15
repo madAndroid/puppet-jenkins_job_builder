@@ -77,12 +77,12 @@ describe 'jenkins_job_builder::job', type: :define do
     describe 'with idempotence enabled' do
       let(:title) { 'test' }
       let(:params) {{
-        'idempotence' => true,
+        'idempotence' => true
       }}
 
       it { should contain_exec('manage jenkins job - test').with(
         'command' => '/bin/sleep 0 && /usr/local/bin/jenkins-jobs --ignore-cache --conf /etc/jenkins_jobs/jenkins_jobs.ini update /tmp/jenkins-test.yaml',
-        'unless'  => "/bin/bash -c '/bin/diff <(/bin/xmllint --c14n /var/lib/jenkins/jobs/test/config.xml) <(/usr/local/bin/jenkins-jobs --ignore-cache --conf /etc/jenkins_jobs/jenkins_jobs.ini test /tmp/jenkins-test.yaml|/bin/xmllint --c14n - )'",
+        'unless'  => "/bin/bash -c '/bin/diff <(/bin/xmllint --c14n /var/lib/jenkins/jobs/test/config.xml) <(/usr/local/bin/jenkins-jobs --ignore-cache --conf /etc/jenkins_jobs/jenkins_jobs.ini test /tmp/jenkins-test.yaml|/bin/xmllint --c14n - )'"
       )}
     end
 
