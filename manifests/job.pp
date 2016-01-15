@@ -97,6 +97,15 @@ define jenkins_job_builder::job (
     $refreshonly = true
   }
 
+  $job_builder_cmd = "/usr/local/bin/jenkins-jobs --ignore-cache --conf /etc/jenkins_jobs/jenkins_jobs.ini"
+
+  if $idempotence {
+    $xmllint_cmd = "/bin/xmllint --c14n"
+    $unless_cmd  = "/bin/diff <(${xmllint_cmd} ${jenkins_job_dir}/${name}/config.xml) <(${job_builder_cmd} test /tmp/jenkins-${name}.yaml|${xmllint_cmd} - )"
+  } else {
+    $refreshonly = true
+  }
+
   exec { "manage jenkins job - ${name}":
     command     => $jjbcmd,
     refreshonly => $refreshonly,
