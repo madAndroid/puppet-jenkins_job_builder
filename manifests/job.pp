@@ -101,7 +101,7 @@ define jenkins_job_builder::job (
 
   if $idempotence {
     $xmllint_cmd = '/bin/xmllint --c14n'
-    $unless_cmd  = "/bin/bash -c '/bin/diff <(${xmllint_cmd} ${jenkins_job_dir}/${name}/config.xml) <(${job_builder_cmd} test /tmp/jenkins-${name}.yaml|${xmllint_cmd} - )'"
+    $unless_cmd  = "/bin/bash -c '/bin/diff <(${xmllint_cmd} ${jenkins_job_dir}/${name}/config.xml || echo '') <(${job_builder_cmd} test /tmp/jenkins-${name}.yaml|${xmllint_cmd} - )'"
   } else {
     $refreshonly = true
   }
